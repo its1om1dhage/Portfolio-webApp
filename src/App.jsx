@@ -6,13 +6,14 @@ import Resume from './pages/Resume';
 import Contact from './pages/Contact';
 import Feedback from './pages/Feedback';
 import Navbar from './Components/Navbar';
-
+import NeuralNetworkBackground from './Components/NeuralNetworkBackground';
 
 const App = () => {
   return (
     <>
+      <NeuralNetworkBackground />
       <Router>
-        <div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
           <Navbar/>
           <Routes>
             <Route path='/' element = {<Home/>} />
