@@ -6,6 +6,10 @@ const palette = [
   0xff00cc, 0x00fff7, 0x7c3aed, 0xf59e0b, 0x10b981, 0xf43f5e, 0x6366f1, 0xfbbf24
 ];
 
+const NODE_COUNT = 30; // Large network
+const NEIGHBOR_COUNT = 3; // More lines per node
+const NETWORK_WIDTH = 300; // Spread nodes wider
+
 const NeuralNetworkBackground = () => {
   const mountRef = useRef();
 
@@ -15,8 +19,8 @@ const NeuralNetworkBackground = () => {
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000000, 0.0015);
 
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1200);
-    camera.position.set(0, 5, 22);
+    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
+    camera.position.set(0, 5, 120);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
@@ -28,7 +32,7 @@ const NeuralNetworkBackground = () => {
     function createStarfield() {
       const count = 5000, pos = [];
       for (let i = 0; i < count; i++) {
-        const r = THREE.MathUtils.randFloat(40, 120);
+        const r = THREE.MathUtils.randFloat(NETWORK_WIDTH, NETWORK_WIDTH * 2);
         const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
         const theta = THREE.MathUtils.randFloat(0, Math.PI * 2);
         pos.push(
@@ -52,87 +56,115 @@ const NeuralNetworkBackground = () => {
     const starField = createStarfield();
     scene.add(starField);
 
-    // --- Neural Network with nearest neighbors ---
-    const nodeCount = 22; // adjust for density
-    const nodePositions = [];
+    // --- Neural Network with morphing nodes ---
+    // Store base positions and morph targets
+    const basePositions = [];
+    const morphTargets = [];
     const nodeColors = [];
     const nodesArray = [];
-    for (let i = 0; i < nodeCount; i++) {
+    for (let i = 0; i < NODE_COUNT; i++) {
       const pos = new THREE.Vector3(
-        THREE.MathUtils.randFloatSpread(20),
-        THREE.MathUtils.randFloatSpread(20),
-        THREE.MathUtils.randFloatSpread(20)
+        THREE.MathUtils.randFloatSpread(NETWORK_WIDTH),
+        THREE.MathUtils.randFloatSpread(NETWORK_WIDTH * 0.5),
+        THREE.MathUtils.randFloatSpread(NETWORK_WIDTH * 0.5)
       );
-      nodePositions.push(pos.x, pos.y, pos.z);
-      nodesArray.push(pos);
+      basePositions.push(pos);
+      morphTargets.push(new THREE.Vector3(
+        THREE.MathUtils.randFloatSpread(NETWORK_WIDTH),
+        THREE.MathUtils.randFloatSpread(NETWORK_WIDTH * 0.5),
+        THREE.MathUtils.randFloatSpread(NETWORK_WIDTH * 0.5)
+      ));
       // Assign a random color from the palette
       const color = new THREE.Color(palette[Math.floor(Math.random() * palette.length)]);
       nodeColors.push(color.r, color.g, color.b);
+      nodesArray.push(pos.clone());
     }
+
     // Node geometry with color
     const nodeGeometry = new THREE.BufferGeometry();
-    nodeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(nodePositions, 3));
+    const nodePositions = new Float32Array(NODE_COUNT * 3);
+    for (let i = 0; i < NODE_COUNT; i++) {
+      nodePositions[i * 3] = basePositions[i].x;
+      nodePositions[i * 3 + 1] = basePositions[i].y;
+      nodePositions[i * 3 + 2] = basePositions[i].z;
+    }
+    nodeGeometry.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));
     nodeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(nodeColors, 3));
     const nodeMaterial = new THREE.PointsMaterial({
       vertexColors: true,
-      size: 0.7,
+      size: 1.1,
       transparent: true,
       opacity: 0.95
     });
     const nodes = new THREE.Points(nodeGeometry, nodeMaterial);
     scene.add(nodes);
 
-    // Connections: connect each node to its 3 nearest neighbors
-    const connectionPositions = [];
-    const connectionColors = [];
-    const neighborCount = 7; // Increase for more lines, decrease for fewer
+    // Connections
+    let connectionPositions = [];
+    let connectionColors = [];
+    let connectionGeometry, connections;
 
-    for (let i = 0; i < nodeCount; i++) {
-      // Find distances to all other nodes
-      const dists = [];
-      for (let j = 0; j < nodeCount; j++) {
-        if (i !== j) {
-          const dist = nodesArray[i].distanceTo(nodesArray[j]);
-          dists.push({ j, dist });
+    function updateConnections(currentPositions, colorShift = 0) {
+      connectionPositions = [];
+      connectionColors = [];
+      for (let i = 0; i < NODE_COUNT; i++) {
+        // Find distances to all other nodes
+        const dists = [];
+        for (let j = 0; j < NODE_COUNT; j++) {
+          if (i !== j) {
+            const dx = currentPositions[i * 3] - currentPositions[j * 3];
+            const dy = currentPositions[i * 3 + 1] - currentPositions[j * 3 + 1];
+            const dz = currentPositions[i * 3 + 2] - currentPositions[j * 3 + 2];
+            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            dists.push({ j, dist });
+          }
+        }
+        // Sort by distance and pick N nearest
+        dists.sort((a, b) => a.dist - b.dist);
+        for (let k = 0; k < NEIGHBOR_COUNT; k++) {
+          const j = dists[k].j;
+          if (i < j) {
+            connectionPositions.push(
+              currentPositions[i * 3], currentPositions[i * 3 + 1], currentPositions[i * 3 + 2],
+              currentPositions[j * 3], currentPositions[j * 3 + 1], currentPositions[j * 3 + 2]
+            );
+            // Color: animate hue over time
+            const baseColor1 = new THREE.Color(nodeColors[i * 3], nodeColors[i * 3 + 1], nodeColors[i * 3 + 2]);
+            const baseColor2 = new THREE.Color(nodeColors[j * 3], nodeColors[j * 3 + 1], nodeColors[j * 3 + 2]);
+            baseColor1.offsetHSL(colorShift, 0, 0);
+            baseColor2.offsetHSL(colorShift, 0, 0);
+            connectionColors.push(baseColor1.r, baseColor1.g, baseColor1.b);
+            connectionColors.push(baseColor2.r, baseColor2.g, baseColor2.b);
+          }
         }
       }
-      // Sort by distance and pick N nearest
-      dists.sort((a, b) => a.dist - b.dist);
-      for (let k = 0; k < neighborCount; k++) {
-        const j = dists[k].j;
-        // To avoid duplicate lines, only connect if i < j
-        if (i < j) {
-          connectionPositions.push(
-            nodePositions[i * 3], nodePositions[i * 3 + 1], nodePositions[i * 3 + 2],
-            nodePositions[j * 3], nodePositions[j * 3 + 1], nodePositions[j * 3 + 2]
-          );
-          const c1 = new THREE.Color(nodeColors[i * 3], nodeColors[i * 3 + 1], nodeColors[i * 3 + 2]);
-          const c2 = new THREE.Color(nodeColors[j * 3], nodeColors[j * 3 + 1], nodeColors[j * 3 + 2]);
-          connectionColors.push(c1.r, c1.g, c1.b);
-          connectionColors.push(c2.r, c2.g, c2.b);
-        }
+      if (connections) {
+        scene.remove(connections);
+        connectionGeometry.dispose();
       }
+      connectionGeometry = new THREE.BufferGeometry();
+      connectionGeometry.setAttribute('position', new THREE.Float32BufferAttribute(connectionPositions, 3));
+      connectionGeometry.setAttribute('color', new THREE.Float32BufferAttribute(connectionColors, 3));
+      const connectionMaterial = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.35
+      });
+      connections = new THREE.LineSegments(connectionGeometry, connectionMaterial);
+      scene.add(connections);
     }
-    const connectionGeometry = new THREE.BufferGeometry();
-    connectionGeometry.setAttribute('position', new THREE.Float32BufferAttribute(connectionPositions, 3));
-    connectionGeometry.setAttribute('color', new THREE.Float32BufferAttribute(connectionColors, 3));
-    const connectionMaterial = new THREE.LineBasicMaterial({
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.5
-    });
-    const connections = new THREE.LineSegments(connectionGeometry, connectionMaterial);
-    scene.add(connections);
+
+    updateConnections(nodePositions);
 
     // Orbit Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.rotateSpeed = 0.5;
-    controls.minDistance = 5;
-    controls.maxDistance = 100;
+    controls.minDistance = 20;
+    controls.maxDistance = 400;
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.15;
+    controls.autoRotateSpeed = 0.12;
     controls.enablePan = false;
 
     // Parallax effect on scroll
@@ -141,16 +173,52 @@ const NeuralNetworkBackground = () => {
       const newScrollY = window.scrollY;
       const delta = (newScrollY - scrollY) * 0.002;
       nodes.rotation.x += delta;
-      connections.rotation.x += delta;
+      if (connections) connections.rotation.x += delta;
       scrollY = newScrollY;
     };
     window.addEventListener('scroll', onScroll);
 
-    // Animation Loop
+    // Animation Loop: morph shape and animate color
+    let morphTime = 0;
+    let morphDir = 1;
     const animate = () => {
+      morphTime += 0.008 * morphDir;
+      if (morphTime > 1 || morphTime < 0) {
+        morphDir *= -1;
+        morphTime = THREE.MathUtils.clamp(morphTime, 0, 1);
+        // New morph targets for next morph
+        for (let i = 0; i < NODE_COUNT; i++) {
+          morphTargets[i].set(
+            THREE.MathUtils.randFloatSpread(NETWORK_WIDTH),
+            THREE.MathUtils.randFloatSpread(NETWORK_WIDTH * 0.5),
+            THREE.MathUtils.randFloatSpread(NETWORK_WIDTH * 0.5)
+          );
+        }
+      }
+      // Interpolate node positions
+      for (let i = 0; i < NODE_COUNT; i++) {
+        nodesArray[i].lerpVectors(basePositions[i], morphTargets[i], morphTime);
+        nodePositions[i * 3] = nodesArray[i].x;
+        nodePositions[i * 3 + 1] = nodesArray[i].y;
+        nodePositions[i * 3 + 2] = nodesArray[i].z;
+      }
+      nodeGeometry.attributes.position.needsUpdate = true;
+
+      // Animate node colors (hue shift)
+      const colorShift = (Math.sin(Date.now() * 0.0002) + 1) * 0.15;
+      for (let i = 0; i < NODE_COUNT; i++) {
+        const baseColor = new THREE.Color(palette[i % palette.length]);
+        baseColor.offsetHSL(colorShift, 0, 0);
+        nodeGeometry.attributes.color.setXYZ(i, baseColor.r, baseColor.g, baseColor.b);
+      }
+      nodeGeometry.attributes.color.needsUpdate = true;
+
+      // Animate connections (rebuild for new positions/colors)
+      updateConnections(nodePositions, colorShift);
+
       starField.rotation.y += 0.0003;
       nodes.rotation.y += 0.001;
-      connections.rotation.y += 0.001;
+      if (connections) connections.rotation.y += 0.001;
       controls.update();
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
