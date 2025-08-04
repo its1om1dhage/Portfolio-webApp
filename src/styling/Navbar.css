@@ -7,7 +7,7 @@
     --txt2-color: rgb(111, 110, 110);
     --txt3-color: rgba(60, 59, 59, 0.448);
     --highlight1-color: #ffbd39;
-    --highlight2-color: rgb(143, 149, 252);
+     /* --highlight1-color: linear-gradient(135deg, #ffe066 0%, #ffbd39 40%, #ff9f1a 70%, #ffd54f 100%); */
 }
 
 nav {
