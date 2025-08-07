@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { experienceData } from '../data/experienceData';
+import React, { useState, useEffect, useRef } from 'react';
+import { personalInfo } from '../data/experienceData';
 import '../styling/Contact_Enhanced.css';
 
 function Contact() {
@@ -10,12 +10,61 @@ function Contact() {
     message: '',
     projectType: '',
     budget: '',
-    timeline: ''
+    timeline: '',
+    phone: '',
+    company: '',
+    urgency: 'normal',
+    preferredContact: 'email'
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [activeQuestion, setActiveQuestion] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+  const [isVisible, setIsVisible] = useState({});
+  const contactRef = useRef(null);
+
+  // Animation on scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(prev => ({ ...prev, [entry.target.id]: true }));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const sections = contactRef.current?.querySelectorAll('[id]');
+    sections?.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections?.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
+
+  // Enhanced form validation
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.name.trim()) errors.name = 'Name is required';
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (!formData.subject.trim()) errors.subject = 'Subject is required';
+    if (!formData.message.trim()) {
+      errors.message = 'Message is required';
+    } else if (formData.message.length < 10) {
+      errors.message = 'Message must be at least 10 characters long';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,14 +72,29 @@ function Contact() {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
+    // Simulate form submission with better feedback
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       setIsSubmitting(false);
       setSubmitStatus('success');
       setFormData({ 
@@ -40,65 +104,133 @@ function Contact() {
         message: '',
         projectType: '',
         budget: '',
-        timeline: ''
+        timeline: '',
+        phone: '',
+        company: '',
+        urgency: 'normal',
+        preferredContact: 'email'
       });
       
-      // Clear success message after 5 seconds
+      // Clear success message after 8 seconds
+      setTimeout(() => setSubmitStatus(null), 8000);
+    } catch (error) {
+      setIsSubmitting(false);
+      setSubmitStatus('error');
       setTimeout(() => setSubmitStatus(null), 5000);
-    }, 2000);
+    }
   };
 
   const toggleQuestion = (index) => {
     setActiveQuestion(activeQuestion === index ? null : index);
   };
 
+  // Enhanced project types with icons
+  const projectTypes = [
+    { value: 'website', label: 'Website Development', icon: 'fas fa-globe' },
+    { value: 'webapp', label: 'Web Application', icon: 'fas fa-laptop-code' },
+    { value: 'ecommerce', label: 'E-commerce Platform', icon: 'fas fa-shopping-cart' },
+    { value: 'mobile', label: 'Mobile App', icon: 'fas fa-mobile-alt' },
+    { value: 'api', label: 'API Development', icon: 'fas fa-code' },
+    { value: 'uiux', label: 'UI/UX Design', icon: 'fas fa-palette' },
+    { value: 'other', label: 'Other', icon: 'fas fa-cogs' }
+  ];
+
+  const budgetRanges = [
+    { value: 'small', label: '$1,000 - $5,000', popular: false },
+    { value: 'medium', label: '$5,000 - $15,000', popular: true },
+    { value: 'large', label: '$15,000 - $50,000', popular: false },
+    { value: 'enterprise', label: '$50,000+', popular: false },
+    { value: 'discuss', label: 'Let\'s Discuss', popular: false }
+  ];
+
+  const timelineOptions = [
+    { value: 'rush', label: 'ASAP (Rush)', icon: 'fas fa-bolt', urgency: 'high' },
+    { value: 'fast', label: '2-4 weeks', icon: 'fas fa-forward', urgency: 'medium' },
+    { value: 'standard', label: '1-3 months', icon: 'fas fa-calendar-alt', urgency: 'normal' },
+    { value: 'flexible', label: '3+ months', icon: 'fas fa-clock', urgency: 'low' }
+  ];
+
+  const urgencyLevels = [
+    { value: 'low', label: 'Low Priority', color: '#10b981' },
+    { value: 'normal', label: 'Normal', color: '#6366f1' },
+    { value: 'high', label: 'High Priority', color: '#f59e0b' },
+    { value: 'urgent', label: 'Urgent', color: '#ef4444' }
+  ];
+
   const faqData = [
     {
       question: "What's your typical project timeline?",
-      answer: "Project timelines vary based on complexity, but most projects range from 2-12 weeks. I provide detailed timelines during our initial consultation."
+      answer: "Project timelines vary based on complexity and scope. Simple websites typically take 2-4 weeks, while complex web applications can take 2-6 months. I provide detailed timelines with milestones during our initial consultation to ensure clear expectations."
     },
     {
       question: "Do you work with international clients?",
-      answer: "Yes! I work with clients worldwide. I'm experienced in remote collaboration and can adapt to different time zones for meetings and communication."
+      answer: "Absolutely! I work with clients worldwide and have experience collaborating across different time zones. I use modern communication tools and establish regular check-ins to ensure smooth project delivery regardless of location."
     },
     {
       question: "What technologies do you specialize in?",
-      answer: "I specialize in React, Node.js, TypeScript, and modern web technologies. I also work with cloud platforms like AWS and have experience with mobile development."
+      answer: "I specialize in modern JavaScript technologies including React.js, Node.js, TypeScript, and Next.js. I also work with cloud platforms (AWS, Azure, GCP), databases (MongoDB, PostgreSQL), and various other tools based on project requirements."
     },
     {
-      question: "How do you handle project revisions?",
-      answer: "I include a reasonable number of revisions in all projects. Major scope changes are discussed separately to ensure we stay aligned on goals and timelines."
+      question: "How do you handle project revisions and changes?",
+      answer: "I include reasonable revisions in all project quotes and maintain open communication throughout development. For major scope changes, I provide transparent pricing and timeline adjustments to keep projects on track."
     },
     {
-      question: "What's your preferred communication method?",
-      answer: "I'm flexible with communication preferences. Email for formal updates, Slack/Discord for quick questions, and video calls for detailed discussions work great."
+      question: "What's included in your project pricing?",
+      answer: "My pricing includes development, testing, deployment, documentation, and post-launch support. I provide detailed proposals breaking down all costs upfront with no hidden fees."
+    },
+    {
+      question: "Do you provide ongoing maintenance and support?",
+      answer: "Yes! I offer various maintenance packages including bug fixes, security updates, performance monitoring, and feature enhancements. I believe in long-term partnerships with my clients."
     }
   ];
 
+  // Quick response stats
+  const responseStats = [
+    { icon: 'fas fa-clock', value: '< 2 hours', label: 'Response Time' },
+    { icon: 'fas fa-calendar-check', value: '100%', label: 'On-Time Delivery' },
+    { icon: 'fas fa-users', value: '50+', label: 'Happy Clients' },
+    { icon: 'fas fa-star', value: '4.9/5', label: 'Client Rating' }
+  ];
+
   return (
-    <div className="contact-page">
-      {/* Hero Section */}
-      <section className="contact-hero">
+    <div className="contact-page" ref={contactRef}>
+      {/* Hero Section with Animation */}
+      <section id="hero" className={`contact-hero ${isVisible.hero ? 'animate-in' : ''}`}>
         <div className="container">
-          <h1 className="hero-title">Get In Touch</h1>
-          <p className="hero-description">
-            Ready to start your next project? Let's discuss how we can work together 
-            to bring your ideas to life.
-          </p>
+          <div className="hero-content">
+            <h1 className="hero-title">Let's Build Something Amazing Together</h1>
+            <p className="hero-description">
+              Ready to transform your ideas into powerful digital solutions? I'm here to help you 
+              create applications that not only look great but drive real business results.
+            </p>
+            <div className="hero-stats">
+              {responseStats.map((stat, index) => (
+                <div key={index} className="stat-card">
+                  <div className="stat-icon">
+                    <i className={stat.icon}></i>
+                  </div>
+                  <div className="stat-content">
+                    <span className="stat-value">{stat.value}</span>
+                    <span className="stat-label">{stat.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="contact-section">
+      <section id="contact-main" className={`contact-section ${isVisible['contact-main'] ? 'animate-in' : ''}`}>
         <div className="container">
           <div className="contact-content">
             {/* Contact Info */}
             <div className="contact-info">
               <h2>Let's Start a Conversation</h2>
               <p>
-                I'm always excited to work on new projects and meet new people. 
-                Whether you have a question, a project idea, or just want to say hi, 
-                feel free to reach out!
+                I'm passionate about creating digital solutions that make a real impact. 
+                Whether you have a detailed project plan or just an idea you'd like to explore, 
+                I'm here to help bring it to life.
               </p>
 
               <div className="contact-methods">
@@ -108,8 +240,11 @@ function Contact() {
                   </div>
                   <div className="method-content">
                     <h3>Email</h3>
-                    <p>om.dhage@example.com</p>
-                    <a href="mailto:om.dhage@example.com">Send Email</a>
+                    <p>{personalInfo.email}</p>
+                    <a href={`mailto:${personalInfo.email}`} className="method-link">
+                      <i className="fas fa-external-link-alt"></i>
+                      Send Email
+                    </a>
                   </div>
                 </div>
 
@@ -119,8 +254,11 @@ function Contact() {
                   </div>
                   <div className="method-content">
                     <h3>Phone</h3>
-                    <p>+91 9876543210</p>
-                    <a href="tel:+919876543210">Call Now</a>
+                    <p>{personalInfo.phone}</p>
+                    <a href={`tel:${personalInfo.phone}`} className="method-link">
+                      <i className="fas fa-external-link-alt"></i>
+                      Call Now
+                    </a>
                   </div>
                 </div>
 
@@ -130,8 +268,8 @@ function Contact() {
                   </div>
                   <div className="method-content">
                     <h3>Location</h3>
-                    <p>Hinganghat, Maharashtra</p>
-                    <p>India</p>
+                    <p>{personalInfo.location}</p>
+                    <span className="location-note">Available for remote work worldwide</span>
                   </div>
                 </div>
 
@@ -141,118 +279,310 @@ function Contact() {
                   </div>
                   <div className="method-content">
                     <h3>Response Time</h3>
-                    <p>Usually within 24 hours</p>
-                    <p>Monday - Friday</p>
+                    <p>Usually within 2 hours</p>
+                    <span className="time-note">Monday - Friday, 9 AM - 6 PM IST</span>
                   </div>
                 </div>
               </div>
 
               <div className="social-links">
-                <h3>Follow Me</h3>
+                <h3>Connect With Me</h3>
                 <div className="social-icons">
-                  <a href="https://linkedin.com/in/om-dhage" target="_blank" rel="noopener noreferrer">
+                  <a href={personalInfo.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon linkedin">
                     <i className="fab fa-linkedin"></i>
+                    <span>LinkedIn</span>
                   </a>
-                  <a href="https://github.com/om-dhage" target="_blank" rel="noopener noreferrer">
+                  <a href={personalInfo.socialLinks.github} target="_blank" rel="noopener noreferrer" className="social-icon github">
                     <i className="fab fa-github"></i>
+                    <span>GitHub</span>
                   </a>
-                  <a href="https://twitter.com/om-dhage" target="_blank" rel="noopener noreferrer">
+                  <a href={personalInfo.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="social-icon twitter">
                     <i className="fab fa-twitter"></i>
+                    <span>Twitter</span>
                   </a>
-                  <a href="https://instagram.com/om-dhage" target="_blank" rel="noopener noreferrer">
+                  <a href={personalInfo.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-icon instagram">
                     <i className="fab fa-instagram"></i>
-                  </a>
-                  <a href="https://behance.net/om-dhage" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-behance"></i>
+                    <span>Instagram</span>
                   </a>
                 </div>
               </div>
             </div>
 
-            {/* Contact Form */}
+            {/* Enhanced Contact Form */}
             <div className="contact-form-container">
               <div className="form-card">
-                <h2>Send Message</h2>
+                <div className="form-header">
+                  <h2>Send Me a Message</h2>
+                  <p>Tell me about your project and let's explore how we can work together</p>
+                </div>
                 
                 {submitStatus === 'success' && (
-                  <div className="success-message">
+                  <div className="status-message success">
                     <i className="fas fa-check-circle"></i>
-                    <p>Thank you! Your message has been sent successfully. I'll get back to you soon.</p>
+                    <div>
+                      <h4>Message Sent Successfully!</h4>
+                      <p>Thank you for reaching out! I'll get back to you within 2 hours.</p>
+                    </div>
+                  </div>
+                )}
+
+                {submitStatus === 'error' && (
+                  <div className="status-message error">
+                    <i className="fas fa-exclamation-circle"></i>
+                    <div>
+                      <h4>Error Sending Message</h4>
+                      <p>Something went wrong. Please try again or contact me directly.</p>
+                    </div>
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="contact-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="name">Full Name *</label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Your full name"
-                      />
+                  {/* Basic Information */}
+                  <div className="form-section">
+                    <h3 className="section-title">
+                      <i className="fas fa-user"></i>
+                      Contact Information
+                    </h3>
+                    
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="name">
+                          Full Name *
+                          {formErrors.name && <span className="error-text">{formErrors.name}</span>}
+                        </label>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Your full name"
+                          className={formErrors.name ? 'error' : ''}
+                        />
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor="email">
+                          Email Address *
+                          {formErrors.email && <span className="error-text">{formErrors.email}</span>}
+                        </label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="your.email@example.com"
+                          className={formErrors.email ? 'error' : ''}
+                        />
+                      </div>
                     </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="phone">Phone Number</label>
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          placeholder="+1 (555) 123-4567"
+                        />
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor="company">Company/Organization</label>
+                        <input
+                          type="text"
+                          id="company"
+                          name="company"
+                          value={formData.company}
+                          onChange={handleInputChange}
+                          placeholder="Your company name"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Project Details */}
+                  <div className="form-section">
+                    <h3 className="section-title">
+                      <i className="fas fa-project-diagram"></i>
+                      Project Details
+                    </h3>
                     
                     <div className="form-group">
-                      <label htmlFor="email">Email Address *</label>
+                      <label htmlFor="subject">
+                        Project Subject *
+                        {formErrors.subject && <span className="error-text">{formErrors.subject}</span>}
+                      </label>
                       <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
                         onChange={handleInputChange}
                         required
-                        placeholder="your.email@example.com"
+                        placeholder="Brief description of your project"
+                        className={formErrors.subject ? 'error' : ''}
                       />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="projectType">Project Type</label>
+                      <select
+                        id="projectType"
+                        name="projectType"
+                        value={formData.projectType}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select project type</option>
+                        {projectTypes.map((type) => (
+                          <option key={type.value} value={type.value}>
+                            {type.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="budget">Budget Range</label>
+                        <select
+                          id="budget"
+                          name="budget"
+                          value={formData.budget}
+                          onChange={handleInputChange}
+                        >
+                          <option value="">Select budget range</option>
+                          {budgetRanges.map((budget) => (
+                            <option key={budget.value} value={budget.value}>
+                              {budget.label} {budget.popular ? '(Popular)' : ''}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor="timeline">Timeline</label>
+                        <select
+                          id="timeline"
+                          name="timeline"
+                          value={formData.timeline}
+                          onChange={handleInputChange}
+                        >
+                          <option value="">Select timeline</option>
+                          {timelineOptions.map((timeline) => (
+                            <option key={timeline.value} value={timeline.value}>
+                              {timeline.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="urgency">Project Urgency</label>
+                        <select
+                          id="urgency"
+                          name="urgency"
+                          value={formData.urgency}
+                          onChange={handleInputChange}
+                        >
+                          {urgencyLevels.map((level) => (
+                            <option key={level.value} value={level.value}>
+                              {level.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor="preferredContact">Preferred Contact Method</label>
+                        <select
+                          id="preferredContact"
+                          name="preferredContact"
+                          value={formData.preferredContact}
+                          onChange={handleInputChange}
+                        >
+                          <option value="email">Email</option>
+                          <option value="phone">Phone Call</option>
+                          <option value="video">Video Call</option>
+                          <option value="message">Text Message</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="subject">Subject *</label>
-                    <input
-                      type="text"
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="What's this about?"
-                    />
+                  {/* Message */}
+                  <div className="form-section">
+                    <h3 className="section-title">
+                      <i className="fas fa-comment-dots"></i>
+                      Project Description
+                    </h3>
+                    
+                    <div className="form-group">
+                      <label htmlFor="message">
+                        Tell me about your project *
+                        {formErrors.message && <span className="error-text">{formErrors.message}</span>}
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        required
+                        rows="6"
+                        placeholder="Describe your project goals, requirements, target audience, and any specific features you have in mind..."
+                        className={formErrors.message ? 'error' : ''}
+                      ></textarea>
+                      <div className="character-count">
+                        <span className={formData.message.length < 10 ? 'warning' : 'good'}>
+                          {formData.message.length} characters (minimum 10)
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="message">Message *</label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      rows="6"
-                      placeholder="Tell me about your project or just say hello..."
-                    ></textarea>
+                  <div className="form-actions">
+                    <button 
+                      type="submit" 
+                      className={`btn-primary ${isSubmitting ? 'submitting' : ''}`}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="loading-spinner"></div>
+                          Sending Message...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-paper-plane"></i>
+                          Send Message
+                        </>
+                      )}
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      className="btn-secondary"
+                      onClick={() => {
+                        setFormData({
+                          name: '', email: '', subject: '', message: '', projectType: '',
+                          budget: '', timeline: '', phone: '', company: '', urgency: 'normal',
+                          preferredContact: 'email'
+                        });
+                        setFormErrors({});
+                      }}
+                    >
+                      <i className="fas fa-redo"></i>
+                      Reset Form
+                    </button>
                   </div>
-
-                  <button 
-                    type="submit" 
-                    className={`submit-btn ${isSubmitting ? 'submitting' : ''}`}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin"></i>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-paper-plane"></i>
-                        Send Message
-                      </>
-                    )}
-                  </button>
                 </form>
               </div>
             </div>
@@ -260,82 +590,141 @@ function Contact() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="faq-section">
+      {/* Availability Section */}
+      <section id="availability" className={`availability-section ${isVisible.availability ? 'animate-in' : ''}`}>
         <div className="container">
-          <h2 className="section-title">Frequently Asked Questions</h2>
-          <div className="faq-grid">
-            <div className="faq-item">
-              <h3>What's your typical project timeline?</h3>
-              <p>
-                Project timelines vary based on complexity. Simple websites take 2-3 weeks, 
-                while complex web applications can take 2-3 months. I'll provide a detailed 
-                timeline after understanding your requirements.
-              </p>
-            </div>
-
-            <div className="faq-item">
-              <h3>Do you work with international clients?</h3>
-              <p>
-                Yes! I work with clients worldwide. I'm flexible with time zones and 
-                use modern communication tools to ensure smooth collaboration regardless 
-                of location.
-              </p>
-            </div>
-
-            <div className="faq-item">
-              <h3>What technologies do you specialize in?</h3>
-              <p>
-                I specialize in React.js, Node.js, MongoDB, and modern JavaScript. 
-                I also work with TypeScript, PostgreSQL, AWS, and various other tools 
-                based on project needs.
-              </p>
-            </div>
-
-            <div className="faq-item">
-              <h3>Do you provide post-launch support?</h3>
-              <p>
-                Absolutely! I offer ongoing maintenance, updates, and support packages. 
-                I believe in long-term partnerships and ensuring your project continues 
-                to perform optimally.
-              </p>
-            </div>
-
-            <div className="faq-item">
-              <h3>What's your payment structure?</h3>
-              <p>
-                I typically work with a 50% upfront payment and 50% upon completion 
-                for smaller projects. For larger projects, we can discuss milestone-based 
-                payments that work for both parties.
-              </p>
-            </div>
-
-            <div className="faq-item">
-              <h3>Can you help with existing projects?</h3>
-              <p>
-                Yes! I can help improve, debug, optimize, or add features to existing 
-                projects. I'm experienced in working with legacy code and can adapt 
-                to different coding styles and frameworks.
-              </p>
+          <div className="availability-content">
+            <h2>Current Availability & Process</h2>
+            <p>I'm currently accepting new projects and here's how we can work together</p>
+            
+            <div className="availability-grid">
+              <div className="availability-item">
+                <div className="availability-icon">
+                  <i className="fas fa-calendar-check"></i>
+                </div>
+                <h3>Available Now</h3>
+                <p>Currently accepting new projects with start dates in the next 2-4 weeks</p>
+                <div className="availability-status available">
+                  <i className="fas fa-circle"></i>
+                  Open for New Projects
+                </div>
+              </div>
+              
+              <div className="availability-item">
+                <div className="availability-icon">
+                  <i className="fas fa-handshake"></i>
+                </div>
+                <h3>Free Consultation</h3>
+                <p>30-minute discovery call to discuss your project requirements and goals</p>
+                <div className="availability-action">
+                  <a href={`mailto:${personalInfo.email}?subject=Free Consultation Request`} className="action-link">
+                    <i className="fas fa-calendar-plus"></i>
+                    Schedule Call
+                  </a>
+                </div>
+              </div>
+              
+              <div className="availability-item">
+                <div className="availability-icon">
+                  <i className="fas fa-rocket"></i>
+                </div>
+                <h3>Quick Turnaround</h3>
+                <p>Fast-track projects available for urgent requirements with premium rates</p>
+                <div className="availability-note">
+                  <i className="fas fa-bolt"></i>
+                  Rush projects: +50% rate
+                </div>
+              </div>
+              
+              <div className="availability-item">
+                <div className="availability-icon">
+                  <i className="fas fa-headset"></i>
+                </div>
+                <h3>Ongoing Support</h3>
+                <p>Post-launch maintenance and support packages available for all projects</p>
+                <div className="availability-features">
+                  <span className="feature">24/7 Monitoring</span>
+                  <span className="feature">Monthly Updates</span>
+                  <span className="feature">Performance Reports</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
+      {/* Enhanced FAQ Section */}
+      <section id="faq" className={`faq-section ${isVisible.faq ? 'animate-in' : ''}`}>
+        <div className="container">
+          <div className="faq-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about working with me</p>
+          </div>
+          
+          <div className="faq-list">
+            {faqData.map((item, index) => (
+              <div key={index} className={`faq-item ${activeQuestion === index ? 'active' : ''}`}>
+                <button 
+                  className="faq-question"
+                  onClick={() => toggleQuestion(index)}
+                  aria-expanded={activeQuestion === index}
+                >
+                  <span>{item.question}</span>
+                  <i className="fas fa-chevron-down"></i>
+                </button>
+                <div className="faq-answer">
+                  <div className="faq-answer-content">
+                    <p>{item.answer}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced CTA Section */}
+      <section id="cta" className={`cta-section ${isVisible.cta ? 'animate-in' : ''}`}>
         <div className="container">
           <div className="cta-content">
-            <h2>Ready to Start Your Project?</h2>
-            <p>
-              Let's turn your ideas into reality. Get in touch today and let's discuss 
-              how we can work together to create something amazing.
-            </p>
-            <div className="cta-buttons">
-              <button className="btn-primary" onClick={() => document.getElementById('name').focus()}>
-                Start Project
+            <div className="cta-text">
+              <h2>Ready to Start Your Project?</h2>
+              <p>
+                Let's transform your ideas into powerful digital solutions that drive real results. 
+                Get in touch today and let's discuss how we can work together.
+              </p>
+              <div className="cta-highlights">
+                <div className="highlight">
+                  <i className="fas fa-check"></i>
+                  <span>Free consultation call</span>
+                </div>
+                <div className="highlight">
+                  <i className="fas fa-check"></i>
+                  <span>Detailed project proposal</span>
+                </div>
+                <div className="highlight">
+                  <i className="fas fa-check"></i>
+                  <span>No obligation quote</span>
+                </div>
+              </div>
+            </div>
+            <div className="cta-actions">
+              <button 
+                className="btn-primary" 
+                onClick={() => document.getElementById('name').focus()}
+              >
+                <i className="fas fa-rocket"></i>
+                Start Your Project
               </button>
-              <a href="/resume" className="btn-secondary">
+              <a 
+                href={`mailto:${personalInfo.email}?subject=Quick Question`} 
+                className="btn-secondary"
+              >
+                <i className="fas fa-envelope"></i>
+                Quick Question
+              </a>
+              <a href="/resume" className="btn-outline">
+                <i className="fas fa-file-alt"></i>
                 View My Work
               </a>
             </div>
