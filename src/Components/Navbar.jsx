@@ -15,6 +15,16 @@ function Navbar() {
     setIsMenuOpen(false);
   };
 
+  const handleNavClick = () => {
+    closeMenu();
+    // Scroll to top when navigating
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  };
+
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -55,11 +65,10 @@ function Navbar() {
 
       <div className={`right ${isMenuOpen ? 'active' : ''}`}>
         <ul>
-          <li><NavLink to="/" className={({ isActive }) => isActive ? "selected" : ""} onClick={closeMenu}>Home</NavLink></li>
-          <li><NavLink to="/project" className={({ isActive }) => isActive ? "selected" : ""} onClick={closeMenu}>Projects</NavLink></li>
-          <li><NavLink to="/resume" className={({ isActive }) => isActive ? "selected" : ""} onClick={closeMenu}>Resume</NavLink></li>
-          <li><NavLink to="/contact" className={({ isActive }) => isActive ? "selected" : ""} onClick={closeMenu}>Contact</NavLink></li>
-          <li><NavLink to="/feedback" className={({ isActive }) => isActive ? "selected" : ""} onClick={closeMenu}>Feedback</NavLink></li>
+          <li><NavLink to="/" className={({ isActive }) => isActive ? "selected" : ""} onClick={handleNavClick}>About</NavLink></li>
+          <li><NavLink to="/work" className={({ isActive }) => isActive ? "selected" : ""} onClick={handleNavClick}>Work</NavLink></li>
+          <li><NavLink to="/resume" className={({ isActive }) => isActive ? "selected" : ""} onClick={handleNavClick}>Resume</NavLink></li>
+          <li><NavLink to="/contact" className={({ isActive }) => isActive ? "selected" : ""} onClick={handleNavClick}>Contact</NavLink></li>
         </ul>
       </div>
     </nav>

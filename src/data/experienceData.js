@@ -3,17 +3,17 @@ export const personalInfo = {
   name: "Om Dhage",
   title: "Senior Full Stack Developer",
   subtitle: "Building the Future, One Line of Code at a Time",
-  email: "om.dhage.dev@gmail.com",
-  phone: "+91 9876543210",
+  email: "email.om.dhage@gmail.com",
+  phone: "+91 9579612946",
   location: "Hinganghat, Maharashtra, India",
   availability: "Available for exciting opportunities",
   resumeUrl: "/resume-om-dhage.pdf",
   profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
   socialLinks: {
-    linkedin: "https://linkedin.com/in/om-dhage-developer",
+    linkedin: "https://www.linkedin.com/in/om-dhage-03b784320",
     github: "https://github.com/its1om1dhage",
-    twitter: "https://twitter.com/om_dhage_dev",
-    instagram: "https://instagram.com/om.codes",
+    instagram: "https://www.instagram.com/om_dhage01?igsh=MXdkMThraW92Y2Rleg==",
+    whatsapp: "https://wa.me/919579612946",
     portfolio: "https://omdhage.dev"
   }
 };

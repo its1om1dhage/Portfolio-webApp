@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { projects, categories, skills } from '../data/projectsData';
+import { projects, categories } from '../data/projectsData';
 import '../styling/Project_Enhanced.css';
 
 function Project() {
@@ -149,30 +149,6 @@ function Project() {
                       GitHub <i className="fab fa-github"></i>
                     </a>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section className="skills-section">
-        <div className="container">
-          <h2 className="section-title">Technologies I Master</h2>
-          <p className="section-subtitle">
-            Comprehensive expertise across the full technology stack
-          </p>
-          <div className="skills-categories">
-            {Object.entries(skills).map(([category, skillList]) => (
-              <div key={category} className="skill-category">
-                <h3>{category}</h3>
-                <div className="skills-list">
-                  {skillList.map((skill, index) => (
-                    <div key={index} className="skill-item">
-                      <span className="skill-name">{skill}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
             ))}

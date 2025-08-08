@@ -1,3 +1,11 @@
+/* 
+=====================================================
+   THIS FILE IS NO LONGER USED - KEPT FOR REFERENCE
+   Main CSS file: Contact_Enhanced.css
+   You can delete this file: Contact.css
+=====================================================
+*/
+
 /* Contact Page Styles */
 
 .contact-page {
@@ -179,7 +187,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .success-message i {

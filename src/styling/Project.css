@@ -1,15 +1,16 @@
-/* Modern Projects Page Styles */
+/* 
+=====================================================
+   THIS FILE IS NO LONGER USED - KEPT FOR REFERENCE
+   Main CSS file: Project_Enhanced.css
+   You can delete this file: Project.css
+=====================================================
+*/
 
-.projects-page {
-  min-height: 100vh;
-  padding-top: 80px;
-}
+/*
+Everything below is commented out - this file is no longer used
+*/
 
-/* Hero Section */
-.projects-hero {
-  text-align: center;
-  padding: var(--space-3xl) 0;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(255, 107, 53, 0.05));
+/*
   border-radius: var(--radius-xl);
   margin: var(--space-xl) 0;
 }
@@ -412,3 +413,5 @@
     gap: 0.5rem;
   }
 }
+
+*/

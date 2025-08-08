@@ -67,15 +67,15 @@ function Home() {
             <div className="hero-buttons">
               <button className="btn-primary" onClick={() => scrollToSection('about')}>
                 <i className="fas fa-user"></i>
-                About Me
+                Learn More
               </button>
-              <button className="btn-secondary" onClick={() => scrollToSection('contact')}>
+              <button className="btn-secondary" onClick={() => window.location.href = '/contact'}>
                 <i className="fas fa-paper-plane"></i>
-                Let's Connect
+                Start a Project
               </button>
               <a href={personalInfo.resumeUrl} className="btn-outline" target="_blank" rel="noopener noreferrer">
                 <i className="fas fa-download"></i>
-                Download Resume
+                View Resume
               </a>
             </div>
 
@@ -86,8 +86,8 @@ function Home() {
               <a href={personalInfo.socialLinks.github} target="_blank" rel="noopener noreferrer" title="GitHub">
                 <i className="fab fa-github"></i>
               </a>
-              <a href={personalInfo.socialLinks.twitter} target="_blank" rel="noopener noreferrer" title="Twitter">
-                <i className="fab fa-twitter"></i>
+              <a href={personalInfo.socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" title="WhatsApp">
+                <i className="fab fa-whatsapp"></i>
               </a>
               <a href={personalInfo.socialLinks.instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
                 <i className="fab fa-instagram"></i>
@@ -294,7 +294,7 @@ function Home() {
           </div>
           
           <div className="projects-cta">
-            <button className="btn-primary" onClick={() => window.location.href = '/project'}>
+            <button className="btn-primary" onClick={() => window.location.href = '/work'}>
               <i className="fas fa-folder-open"></i>
               View All Projects
             </button>

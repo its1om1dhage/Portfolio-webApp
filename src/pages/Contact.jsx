@@ -9,12 +9,7 @@ function Contact() {
     subject: '',
     message: '',
     projectType: '',
-    budget: '',
-    timeline: '',
-    phone: '',
-    company: '',
-    urgency: 'normal',
-    preferredContact: 'email'
+    budget: ''
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -198,10 +193,10 @@ function Contact() {
       <section id="hero" className={`contact-hero ${isVisible.hero ? 'animate-in' : ''}`}>
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title">Let's Build Something Amazing Together</h1>
+            <h1 className="hero-title">Let's Work Together</h1>
             <p className="hero-description">
-              Ready to transform your ideas into powerful digital solutions? I'm here to help you 
-              create applications that not only look great but drive real business results.
+              Ready to transform your ideas into powerful digital solutions? Whether you need a quick consultation 
+              or want to start a full project, I'm here to help you create applications that drive real business results.
             </p>
             <div className="hero-stats">
               {responseStats.map((stat, index) => (
@@ -296,9 +291,9 @@ function Contact() {
                     <i className="fab fa-github"></i>
                     <span>GitHub</span>
                   </a>
-                  <a href={personalInfo.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="social-icon twitter">
-                    <i className="fab fa-twitter"></i>
-                    <span>Twitter</span>
+                  <a href={personalInfo.socialLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="social-icon whatsapp">
+                    <i className="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
                   </a>
                   <a href={personalInfo.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-icon instagram">
                     <i className="fab fa-instagram"></i>
@@ -308,12 +303,15 @@ function Contact() {
               </div>
             </div>
 
-            {/* Enhanced Contact Form */}
+            {/* Simplified Contact Form */}
             <div className="contact-form-container">
               <div className="form-card">
                 <div className="form-header">
-                  <h2>Send Me a Message</h2>
-                  <p>Tell me about your project and let's explore how we can work together</p>
+                  <div className="form-icon">
+                    <i className="fas fa-comments"></i>
+                  </div>
+                  <h2>Let's Start a Conversation</h2>
+                  <p>Ready to bring your ideas to life? Tell me about your project and let's create something amazing together!</p>
                 </div>
                 
                 {submitStatus === 'success' && (
@@ -330,26 +328,17 @@ function Contact() {
                   <div className="status-message error">
                     <i className="fas fa-exclamation-circle"></i>
                     <div>
-                      <h4>Error Sending Message</h4>
-                      <p>Something went wrong. Please try again or contact me directly.</p>
+                      <h4>Oops! Something went wrong</h4>
+                      <p>Please try again or reach out via email directly.</p>
                     </div>
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="contact-form">
-                  {/* Basic Information */}
-                  <div className="form-section">
-                    <h3 className="section-title">
-                      <i className="fas fa-user"></i>
-                      Contact Information
-                    </h3>
-                    
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label htmlFor="name">
-                          Full Name *
-                          {formErrors.name && <span className="error-text">{formErrors.name}</span>}
-                        </label>
+                <form onSubmit={handleSubmit} className="contact-form simple-form">
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <div className="input-container">
+                        <i className="fas fa-user input-icon"></i>
                         <input
                           type="text"
                           id="name"
@@ -357,16 +346,16 @@ function Contact() {
                           value={formData.name}
                           onChange={handleInputChange}
                           required
-                          placeholder="Your full name"
+                          placeholder="Your Full Name"
                           className={formErrors.name ? 'error' : ''}
                         />
                       </div>
-                      
-                      <div className="form-group">
-                        <label htmlFor="email">
-                          Email Address *
-                          {formErrors.email && <span className="error-text">{formErrors.email}</span>}
-                        </label>
+                      {formErrors.name && <span className="error-text">{formErrors.name}</span>}
+                    </div>
+                    
+                    <div className="form-group">
+                      <div className="input-container">
+                        <i className="fas fa-envelope input-icon"></i>
                         <input
                           type="email"
                           id="email"
@@ -378,47 +367,13 @@ function Contact() {
                           className={formErrors.email ? 'error' : ''}
                         />
                       </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label htmlFor="phone">Phone Number</label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          placeholder="+1 (555) 123-4567"
-                        />
-                      </div>
-                      
-                      <div className="form-group">
-                        <label htmlFor="company">Company/Organization</label>
-                        <input
-                          type="text"
-                          id="company"
-                          name="company"
-                          value={formData.company}
-                          onChange={handleInputChange}
-                          placeholder="Your company name"
-                        />
-                      </div>
+                      {formErrors.email && <span className="error-text">{formErrors.email}</span>}
                     </div>
                   </div>
 
-                  {/* Project Details */}
-                  <div className="form-section">
-                    <h3 className="section-title">
-                      <i className="fas fa-project-diagram"></i>
-                      Project Details
-                    </h3>
-                    
-                    <div className="form-group">
-                      <label htmlFor="subject">
-                        Project Subject *
-                        {formErrors.subject && <span className="error-text">{formErrors.subject}</span>}
-                      </label>
+                  <div className="form-group">
+                    <div className="input-container">
+                      <i className="fas fa-lightbulb input-icon"></i>
                       <input
                         type="text"
                         id="subject"
@@ -426,31 +381,38 @@ function Contact() {
                         value={formData.subject}
                         onChange={handleInputChange}
                         required
-                        placeholder="Brief description of your project"
+                        placeholder="What's your project idea? (Brief description)"
                         className={formErrors.subject ? 'error' : ''}
                       />
                     </div>
+                    {formErrors.subject && <span className="error-text">{formErrors.subject}</span>}
+                  </div>
 
+                  <div className="form-grid">
                     <div className="form-group">
-                      <label htmlFor="projectType">Project Type</label>
-                      <select
-                        id="projectType"
-                        name="projectType"
-                        value={formData.projectType}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select project type</option>
-                        {projectTypes.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.label}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="select-container">
+                        <i className="fas fa-laptop-code input-icon"></i>
+                        <select
+                          id="projectType"
+                          name="projectType"
+                          value={formData.projectType}
+                          onChange={handleInputChange}
+                        >
+                          <option value="">Choose project type</option>
+                          <option value="website">Website Development</option>
+                          <option value="webapp">Web Application</option>
+                          <option value="ecommerce">E-commerce Platform</option>
+                          <option value="mobile">Mobile App</option>
+                          <option value="api">API Development</option>
+                          <option value="uiux">UI/UX Design</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
                     </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label htmlFor="budget">Budget Range</label>
+                    
+                    <div className="form-group">
+                      <div className="select-container">
+                        <i className="fas fa-dollar-sign input-icon"></i>
                         <select
                           id="budget"
                           name="budget"
@@ -458,132 +420,75 @@ function Contact() {
                           onChange={handleInputChange}
                         >
                           <option value="">Select budget range</option>
-                          {budgetRanges.map((budget) => (
-                            <option key={budget.value} value={budget.value}>
-                              {budget.label} {budget.popular ? '(Popular)' : ''}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      
-                      <div className="form-group">
-                        <label htmlFor="timeline">Timeline</label>
-                        <select
-                          id="timeline"
-                          name="timeline"
-                          value={formData.timeline}
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select timeline</option>
-                          {timelineOptions.map((timeline) => (
-                            <option key={timeline.value} value={timeline.value}>
-                              {timeline.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label htmlFor="urgency">Project Urgency</label>
-                        <select
-                          id="urgency"
-                          name="urgency"
-                          value={formData.urgency}
-                          onChange={handleInputChange}
-                        >
-                          {urgencyLevels.map((level) => (
-                            <option key={level.value} value={level.value}>
-                              {level.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      
-                      <div className="form-group">
-                        <label htmlFor="preferredContact">Preferred Contact Method</label>
-                        <select
-                          id="preferredContact"
-                          name="preferredContact"
-                          value={formData.preferredContact}
-                          onChange={handleInputChange}
-                        >
-                          <option value="email">Email</option>
-                          <option value="phone">Phone Call</option>
-                          <option value="video">Video Call</option>
-                          <option value="message">Text Message</option>
+                          <option value="small">$1,000 - $5,000</option>
+                          <option value="medium">$5,000 - $15,000 (Popular)</option>
+                          <option value="large">$15,000 - $50,000</option>
+                          <option value="enterprise">$50,000+</option>
+                          <option value="discuss">Let's Discuss</option>
                         </select>
                       </div>
                     </div>
                   </div>
 
-                  {/* Message */}
-                  <div className="form-section">
-                    <h3 className="section-title">
-                      <i className="fas fa-comment-dots"></i>
-                      Project Description
-                    </h3>
-                    
-                    <div className="form-group">
-                      <label htmlFor="message">
-                        Tell me about your project *
-                        {formErrors.message && <span className="error-text">{formErrors.message}</span>}
-                      </label>
+                  <div className="form-group">
+                    <div className="textarea-container">
+                      <i className="fas fa-comment-dots input-icon"></i>
                       <textarea
                         id="message"
                         name="message"
                         value={formData.message}
                         onChange={handleInputChange}
                         required
-                        rows="6"
-                        placeholder="Describe your project goals, requirements, target audience, and any specific features you have in mind..."
+                        rows="5"
+                        placeholder="Tell me more about your project goals, requirements, and any specific features you have in mind..."
                         className={formErrors.message ? 'error' : ''}
                       ></textarea>
-                      <div className="character-count">
-                        <span className={formData.message.length < 10 ? 'warning' : 'good'}>
-                          {formData.message.length} characters (minimum 10)
-                        </span>
-                      </div>
+                    </div>
+                    {formErrors.message && <span className="error-text">{formErrors.message}</span>}
+                    <div className="character-count">
+                      <span className={formData.message.length < 10 ? 'warning' : 'good'}>
+                        {formData.message.length} characters (minimum 10)
+                      </span>
                     </div>
                   </div>
 
                   <div className="form-actions">
                     <button 
                       type="submit" 
-                      className={`btn-primary ${isSubmitting ? 'submitting' : ''}`}
+                      className={`btn-primary gradient-btn ${isSubmitting ? 'submitting' : ''}`}
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
                         <>
                           <div className="loading-spinner"></div>
-                          Sending Message...
+                          Sending...
                         </>
                       ) : (
                         <>
                           <i className="fas fa-paper-plane"></i>
                           Send Message
+                          <span className="btn-shine"></span>
                         </>
                       )}
                     </button>
-                    
-                    <button 
-                      type="button" 
-                      className="btn-secondary"
-                      onClick={() => {
-                        setFormData({
-                          name: '', email: '', subject: '', message: '', projectType: '',
-                          budget: '', timeline: '', phone: '', company: '', urgency: 'normal',
-                          preferredContact: 'email'
-                        });
-                        setFormErrors({});
-                      }}
-                    >
-                      <i className="fas fa-redo"></i>
-                      Reset Form
-                    </button>
                   </div>
                 </form>
+
+                <div className="form-footer">
+                  <div className="quick-contact">
+                    <span>Prefer to reach out directly?</span>
+                    <div className="contact-links">
+                      <a href={`mailto:${personalInfo.email}`} className="contact-link email">
+                        <i className="fas fa-envelope"></i>
+                        Email me
+                      </a>
+                      <a href={`tel:${personalInfo.phone}`} className="contact-link phone">
+                        <i className="fas fa-phone"></i>
+                        Call me
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

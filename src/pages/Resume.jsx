@@ -49,8 +49,8 @@ function Resume() {
                   <span className="stat-label">Projects</span>
                 </div>
                 <div className="stat-card">
-                  <span className="stat-number">{experienceData.certifications.length}</span>
-                  <span className="stat-label">Certifications</span>
+                  <span className="stat-number">{experienceData.stats.clients}</span>
+                  <span className="stat-label">Clients</span>
                 </div>
               </div>
             </div>
@@ -168,70 +168,6 @@ function Resume() {
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section className="skills-section">
-        <div className="container">
-          <h2 className="section-title">Technical Skills</h2>
-          <div className="skills-grid">
-            <div className="skill-category">
-              <h3 className="category-title">Frontend Development</h3>
-              <div className="skill-items">
-                {["React", "Next.js", "Vue.js", "TypeScript", "JavaScript ES6+", "HTML5", "CSS3", "Sass/SCSS", "Tailwind CSS", "Material-UI", "Styled Components", "React Query", "Redux Toolkit"].map((skill, index) => (
-                  <div key={index} className="skill-item">
-                    <span className="skill-name">{skill}</span>
-                    <div className="skill-level">
-                      <div className="skill-bar" style={{width: '90%'}}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="skill-category">
-              <h3 className="category-title">Backend Development</h3>
-              <div className="skill-items">
-                {["Node.js", "Express.js", "Nest.js", "Python", "FastAPI", "Django", "GraphQL", "REST APIs", "Microservices", "WebSocket", "JWT Authentication", "OAuth 2.0"].map((skill, index) => (
-                  <div key={index} className="skill-item">
-                    <span className="skill-name">{skill}</span>
-                    <div className="skill-level">
-                      <div className="skill-bar" style={{width: '85%'}}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="skill-category">
-              <h3 className="category-title">Database & Cloud</h3>
-              <div className="skill-items">
-                {["MongoDB", "PostgreSQL", "MySQL", "Redis", "AWS", "Azure", "Google Cloud", "Docker", "Kubernetes", "Firebase", "DynamoDB"].map((skill, index) => (
-                  <div key={index} className="skill-item">
-                    <span className="skill-name">{skill}</span>
-                    <div className="skill-level">
-                      <div className="skill-bar" style={{width: '80%'}}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="skill-category">
-              <h3 className="category-title">DevOps & Tools</h3>
-              <div className="skill-items">
-                {["Git/GitHub", "CI/CD", "GitHub Actions", "Jenkins", "Webpack", "Vite", "ESLint", "Prettier", "Jest", "Cypress", "Figma", "Jira"].map((skill, index) => (
-                  <div key={index} className="skill-item">
-                    <span className="skill-name">{skill}</span>
-                    <div className="skill-level">
-                      <div className="skill-bar" style={{width: '85%'}}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Education Section */}
       <section className="education-section">
         <div className="container">
@@ -257,31 +193,6 @@ function Resume() {
                     ))}
                   </ul>
                 )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Certifications Section */}
-      <section className="certifications-section">
-        <div className="container">
-          <h2 className="section-title">Certifications</h2>
-          <div className="certifications-grid">
-            {experienceData.certifications.map((cert, index) => (
-              <div key={index} className="certification-item">
-                <div className="certification-icon">
-                  <i className="fas fa-certificate"></i>
-                </div>
-                <div className="certification-content">
-                  <h3 className="certification-name">{cert.name}</h3>
-                  <div className="certification-issuer">{cert.issuer}</div>
-                  <div className="certification-meta">
-                    <span>Issued: {cert.date}</span>
-                    {cert.validUntil && <span>Valid Until: {cert.validUntil}</span>}
-                    {cert.credential && <span>Credential ID: {cert.credential}</span>}
-                  </div>
-                </div>
               </div>
             ))}
           </div>

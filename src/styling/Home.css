@@ -1,4 +1,13 @@
 
+/* 
+=====================================================
+   THIS FILE IS NO LONGER USED - KEPT FOR REFERENCE
+   Main CSS file: Home_Enhanced.css
+   You can delete this file: Home.css
+=====================================================
+*/
+
+
 /* Import Font Awesome and additional fonts */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
@@ -589,6 +598,22 @@
     margin-top: 72px;
   }
   
+  .hero-text {
+    text-align: center;
+  }
+  
+  .greeting {
+    text-align: center;
+  }
+  
+  .name {
+    text-align: center;
+  }
+  
+  .role {
+    text-align: center;
+  }
+  
   .section-title {
     font-size: var(--text-4xl);
   }
@@ -649,12 +674,22 @@
     padding: 0 var(--space-md);
   }
   
+  .hero-text {
+    text-align: center;
+  }
+  
+  .greeting {
+    text-align: center;
+  }
+  
   .name {
     font-size: var(--text-4xl);
+    text-align: center;
   }
   
   .role {
     font-size: var(--text-xl);
+    text-align: center;
   }
   
   .profile-card {

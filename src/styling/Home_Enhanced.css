@@ -1008,6 +1008,35 @@
     margin-top: 72px;
   }
   
+  .hero-text {
+    text-align: center !important;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .greeting {
+    text-align: center !important;
+  }
+  
+  .name {
+    font-size: var(--text-4xl);
+    text-align: center !important;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .name .highlight {
+    text-align: center !important;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  .role {
+    text-align: center !important;
+  }
+  
   .section-title {
     font-size: var(--text-4xl);
   }
@@ -1059,12 +1088,32 @@
     padding: 0 var(--space-md);
   }
   
+  .hero-text {
+    text-align: center !important;
+  }
+  
+  .greeting {
+    text-align: center !important;
+  }
+  
   .name {
     font-size: var(--text-4xl);
+    text-align: center !important;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .name .highlight {
+    text-align: center !important;
+    display: inline-block;
+    width: 100%;
   }
   
   .role {
     font-size: var(--text-xl);
+    text-align: center !important;
   }
   
   .profile-card {
